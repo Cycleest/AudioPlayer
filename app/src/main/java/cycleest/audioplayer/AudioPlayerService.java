@@ -44,14 +44,15 @@ public class AudioPlayerService extends Service
 
     public static final int ACTION_TOGGLE = 3;
 
-    public static final int PLAYBACK_STATE_IDLE = -1;
+    public static final int PLAYBACK_STATE_IDLE = -2;
+    public static final int PLAYBACK_STATE_READY = -1;
     public static final int PLAYBACK_STATE_PAUSED = 0;
     public static final int PLAYBACK_STATE_PLAYING = 1;
 
     public static final int WHOLE_STATE_NOTIFICATION = 0;
     public static final int PLAYBACK_STATE_NOTIFICATION = 1;
 
-    private int currentPlaybackState = -1;
+    private int currentPlaybackState = PLAYBACK_STATE_IDLE;
     private String currentTrack;
 
     private Messenger serviceMessenger;
@@ -132,7 +133,7 @@ public class AudioPlayerService extends Service
         try {
             mediaPlayer.setDataSource(trackFile);
             mediaPlayer.prepare();
-            currentPlaybackState = PLAYBACK_STATE_PAUSED;
+            currentPlaybackState = PLAYBACK_STATE_READY;
         } catch (IOException e) {
             Log.d("io", "open failed in service");
             currentPlaybackState = PLAYBACK_STATE_IDLE;
@@ -141,7 +142,7 @@ public class AudioPlayerService extends Service
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        currentPlaybackState = PLAYBACK_STATE_PAUSED;
+        currentPlaybackState = PLAYBACK_STATE_READY;
     }
 
     @Override
@@ -151,7 +152,9 @@ public class AudioPlayerService extends Service
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        currentPlaybackState = PLAYBACK_STATE_PAUSED;
+        currentPlaybackState = PLAYBACK_STATE_READY;
+        Toast.makeText(this, "completed"+String.valueOf(currentPlaybackState), Toast.LENGTH_SHORT).show();
+        notifyAboutPlaybackState();
     }
 
     @Override
@@ -171,6 +174,9 @@ public class AudioPlayerService extends Service
         Handler serviceHandler = new Handler(serviceLooper, this);
         serviceMessenger = new Messenger(serviceHandler);
         mediaPlayer = new MediaPlayer();
+        mediaPlayer.setOnCompletionListener(this);
+        mediaPlayer.setOnErrorListener(this);
+
         startForeground(132, new Notification());
         //restore logic needed
         //currentPlaybackState = ;
