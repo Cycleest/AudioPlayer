@@ -39,7 +39,7 @@ public class PlayerFragment extends Fragment implements Handler.Callback, Servic
         setRetainInstance(true);
         startService();
         initializeClientMessenger();
-        getActivity().bindService(getServiceIntent(), this, Service.BIND_IMPORTANT);//need to check it
+        //getActivity().bindService(getServiceIntent(), this, Service.BIND_IMPORTANT);//need to check it
     }
 
     @Override
@@ -58,6 +58,7 @@ public class PlayerFragment extends Fragment implements Handler.Callback, Servic
     @Override
     public void onResume() {
         super.onResume();
+        getActivity().bindService(getServiceIntent(), this, Service.BIND_IMPORTANT);
         if(playbackStatus != AudioPlayerService.PLAYBACK_STATE_IDLE) {
             initState(playbackStatus);
         }
@@ -72,6 +73,7 @@ public class PlayerFragment extends Fragment implements Handler.Callback, Servic
     @Override
     public void onPause() {
         super.onPause();
+        getActivity().unbindService(this);
     }
 
     private void initializeUI() {
@@ -154,7 +156,7 @@ public class PlayerFragment extends Fragment implements Handler.Callback, Servic
         try {
             serviceMessenger.send(msg);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            Log.d("messaging", "remote exception");
         }
     }
 
@@ -165,7 +167,7 @@ public class PlayerFragment extends Fragment implements Handler.Callback, Servic
         try {
             serviceMessenger.send(msg);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            Log.d("messaging", "remote exception");
         }
     }
 
@@ -218,6 +220,12 @@ public class PlayerFragment extends Fragment implements Handler.Callback, Servic
             case AudioPlayerService.PLAYBACK_STATE_IDLE:
                 playbackButton.setVisibility(Button.INVISIBLE);
                 statusLabel.setText(getString(R.string.idle));
+                break;
+            case AudioPlayerService.PLAYBACK_STATE_READY:
+                playbackStatus = AudioPlayerService.PLAYBACK_STATE_READY;
+                statusLabel.setText(getString(R.string.ready));
+                playbackButton.setVisibility(Button.VISIBLE);
+                playbackButton.setText(getString(R.string.play));
                 break;
             case AudioPlayerService.PLAYBACK_STATE_PAUSED:
                 playbackStatus = AudioPlayerService.PLAYBACK_STATE_PAUSED;
