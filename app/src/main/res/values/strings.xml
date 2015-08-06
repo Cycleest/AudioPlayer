@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">AudioPlayer</string>
+
+    <string name="idle">Status: idle</string>
+    <string name="playing">Status: playing</string>
+    <string name="paused">Status: paused</string>
+
+    <string name="play">►</string>
+    <string name="pause">❚❚</string>
+
+    <string name="setTracks">Set tracks</string>
+
+    <string name="no_tracks_choosen">no tracks choosen</string>
+</resources>
