@@ -2,6 +2,7 @@
     <string name="app_name">AudioPlayer</string>
 
     <string name="idle">Status: idle</string>
+    <string name="ready">Status: ready</string>
     <string name="playing">Status: playing</string>
     <string name="paused">Status: paused</string>
 
